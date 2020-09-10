@@ -23,7 +23,7 @@ function Subtotal() {
                 value={getTotal(cart)}
                 displayType={"text"}
                 thousandSeparator={true}
-                prefix={"$"}
+                prefix={"€"}
             />
             <button>Proceed to checkout</button>
         </div>
