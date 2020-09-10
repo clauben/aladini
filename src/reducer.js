@@ -5,7 +5,7 @@ export const initialState = {
 
 export const getTotal = (cart) => (
     cart?.reduce((amount, item) => item.price + amount, 0)
-); {/* selector */}
+); 
 
 const reducer = (state, action) => {
     console.log(action);

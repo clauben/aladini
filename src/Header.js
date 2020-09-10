@@ -6,8 +6,7 @@ import ShoppingBasketIcon from '@material-ui/icons/ShoppingBasket'
 import {useStateValue} from './StateProvider'
 import {auth} from './firebase.js'
 
-{/* functional component as well as */}
-{/* const Header = () => { ... } */}
+
 function Header() {
     const [{cart, user}] = useStateValue();
     //const [state, dispatch] = useStateValue();
