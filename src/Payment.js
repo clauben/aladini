@@ -6,7 +6,8 @@ import { useStateValue } from "./StateProvider";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CurrencyFormat from "react-currency-format";
 import { getTotal } from "./reducer";
-import Axios from "axios";
+import axios from "./axios";
+import { db } from "./firebase";
 
 function Payment() {
   const [{ cart, user }, dispatch] = useStateValue();
@@ -24,14 +25,18 @@ function Payment() {
   useEffect(() => {
     // generate stripe secret
     const getClientSecret = async () => {
-      const response = await Axios({
+      const response = await axios({
         method: "post",
         //Currencies in subunits
-        url: `/payment/create?total=${getTotal(cart) * 100}`,
+        url: `/payments/create?total=${Math.round(getTotal(cart) * 100)}`,
       });
       setClientSecret(response.data.clientSecret);
     };
+
+    getClientSecret();
   }, [cart]);
+
+  console.log("The Secret is >>>", clientSecret);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -46,9 +51,23 @@ function Payment() {
       .then(({ paymentIntent }) => {
         //paymentIntent = payment confirmation
 
+        db.collection("users")
+          .doc(user?.uid)
+          .collection("orders")
+          .doc(paymentIntent.id)
+          .set({
+            cart: cart,
+            amount: paymentIntent.amount,
+            created: paymentIntent.created,
+          });
+
         setSucceeded(true);
         setError(null);
         setProcessing(false);
+
+        dispatch({
+          type: "EMPTY_CART",
+        });
 
         history.replace("/orders");
       });
